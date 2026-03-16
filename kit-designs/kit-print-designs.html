@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RRDS Kit Print Designs — AutoRepHero</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f0f0f0; padding: 40px; }
+.page-title { text-align: center; font-size: 14px; color: #999; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; }
+.design-section { margin-bottom: 60px; }
+.design-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+.design-note { font-size: 11px; color: #999; margin-top: 8px; font-style: italic; }
+
+/* ===== NFC CARD (3.375 x 2.125 inches = credit card size) ===== */
+.nfc-card { width: 3.375in; height: 2.125in; border-radius: 10px; overflow: hidden; display: inline-block; margin: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.nfc-front { background: linear-gradient(160deg, #1a2244 0%, #161B35 60%, #0f1428 100%); color: white; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between; height: 100%; position: relative; overflow: hidden; }
+.nfc-front::after { content: ''; position: absolute; top: -40px; right: -40px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%); border-radius: 50%; }
+.nfc-front::before { content: ''; position: absolute; bottom: -30px; left: -30px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(52,211,153,0.1) 0%, transparent 70%); border-radius: 50%; }
+.nfc-front .logo-row { display: flex; align-items: center; gap: 10px; }
+.nfc-front .logo-img { width: 36px; height: 36px; border-radius: 6px; }
+.nfc-front .logo-text-wrap { display: flex; flex-direction: column; }
+.nfc-front .logo-text { font-weight: 900; font-size: 15px; letter-spacing: -0.5px; background: linear-gradient(90deg, #38bdf8, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nfc-front .tagline { font-size: 7.5px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-top: 1px; }
+.nfc-front .tap-row { display: flex; align-items: center; justify-content: space-between; }
+.nfc-front .tap-text { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; color: #34d399; }
+.nfc-front .nfc-icon { font-size: 16px; }
+.nfc-front .biz-placeholder { font-size: 9px; color: rgba(255,255,255,0.4); text-align: right; font-style: italic; }
+
+.nfc-back { background: white; color: #111; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+.nfc-back .qr-placeholder { width: 90px; height: 90px; background: #f0f0f0; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999; margin-bottom: 8px; }
+.nfc-back .scan-text { font-size: 9px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.nfc-back .url-text { font-size: 7px; color: #999; margin-top: 4px; }
+.nfc-back .powered { font-size: 6px; color: #bbb; margin-top: 6px; }
+
+/* ===== TABLE TENT (5 x 7 inches) ===== */
+.table-tent { width: 5in; height: 7in; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 10px; display: inline-block; }
+.tt-header { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); padding: 30px 24px 20px; color: white; text-align: center; }
+.tt-header .tt-emoji { font-size: 40px; margin-bottom: 8px; }
+.tt-header h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.tt-header p { font-size: 12px; opacity: 0.9; }
+.tt-body { padding: 24px; text-align: center; }
+.tt-biz-name { font-size: 20px; font-weight: 800; color: #111; margin-bottom: 16px; padding: 12px; background: #f8f8f8; border-radius: 8px; border: 2px dashed #ddd; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+.tt-qr { width: 160px; height: 160px; background: #f8f8f8; border: 2px dashed #ccc; border-radius: 12px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; }
+.tt-or { font-size: 12px; color: #999; font-weight: 600; margin: 12px 0; text-transform: uppercase; letter-spacing: 1px; }
+.tt-tap { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: #22c55e; padding: 12px; background: #f0fdf4; border-radius: 8px; }
+.tt-footer { padding: 16px 24px; background: #f8f8f8; text-align: center; border-top: 1px solid #eee; }
+.tt-footer p { font-size: 9px; color: #999; }
+.tt-footer .powered { font-size: 8px; color: #bbb; margin-top: 4px; }
+
+/* ===== WINDOW STICKER (4 x 4 inches) ===== */
+.window-sticker { width: 4in; height: 4in; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 10px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+.ws-stars { font-size: 28px; letter-spacing: 4px; margin-bottom: 8px; }
+.ws-title { font-size: 16px; font-weight: 800; color: #111; margin-bottom: 4px; }
+.ws-sub { font-size: 11px; color: #666; margin-bottom: 16px; }
+.ws-qr { width: 120px; height: 120px; background: #f8f8f8; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #999; margin-bottom: 12px; }
+.ws-scan { font-size: 10px; font-weight: 700; color: #22c55e; text-transform: uppercase; letter-spacing: 1px; }
+.ws-powered { font-size: 7px; color: #ccc; margin-top: 8px; }
+
+/* ===== QUICK START CARD (8.5 x 11, folds to 4-panel) ===== */
+.quickstart { width: 8.5in; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 10px; }
+.qs-header { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); padding: 24px 30px; color: white; }
+.qs-header h1 { font-size: 22px; font-weight: 900; }
+.qs-header p { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+.qs-body { padding: 24px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.qs-section { }
+.qs-section h3 { font-size: 13px; font-weight: 800; color: #22c55e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.qs-section ul { list-style: none; font-size: 11px; color: #444; line-height: 1.8; }
+.qs-section ul li::before { content: '✅ '; }
+.qs-section ul.dont li::before { content: '❌ '; }
+.qs-section .script { background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 12px; font-size: 11px; color: #333; border-radius: 0 6px 6px 0; margin: 8px 0; font-style: italic; line-height: 1.6; }
+.qs-section .warn { background: #fef2f2; border-left: 3px solid #ef4444; padding: 10px 12px; font-size: 10px; color: #666; border-radius: 0 6px 6px 0; margin: 8px 0; line-height: 1.6; }
+.qs-footer { padding: 16px 30px; background: #111; color: white; display: flex; justify-content: space-between; align-items: center; }
+.qs-footer .contact { font-size: 11px; }
+.qs-footer .brand { font-size: 10px; opacity: 0.5; }
+.qs-creds { padding: 16px 30px; background: #f8f8f8; border-top: 1px solid #eee; }
+.qs-creds h3 { font-size: 12px; font-weight: 700; color: #111; margin-bottom: 8px; }
+.qs-creds .cred-row { display: flex; gap: 20px; font-size: 11px; color: #444; }
+.qs-creds .cred-item { flex: 1; padding: 8px 12px; background: white; border-radius: 6px; border: 1px solid #eee; }
+.qs-creds .cred-label { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
+.qs-creds .cred-value { font-size: 12px; font-weight: 600; color: #111; margin-top: 2px; }
+
+@media print {
+  body { background: white; padding: 0; }
+  .design-section { page-break-after: always; }
+  .design-label, .design-note, .page-title { display: none; }
+}
+</style>
+</head>
+<body>
+
+<p class="page-title">RRDS Deployment Kit™ — Print Designs (Customize & Print)</p>
+
+<!-- ===== NFC CARD ===== -->
+<div class="design-section">
+  <p class="design-label">📇 NFC Card — Front (3.375" x 2.125")</p>
+  <div class="nfc-card">
+    <div class="nfc-front">
+      <div>
+        <div class="logo-row">
+          <img class="logo-img" src="autorephero-logo.jpg" alt="AutoRepHero" onerror="this.style.display='none'">
+          <div class="logo-text-wrap">
+            <div class="logo-text">AutoRepHero</div>
+            <div class="tagline">Rapid Review Deployment System</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="tap-row">
+          <div class="tap-text"><span class="nfc-icon">📱</span> Tap to Review</div>
+          <div class="biz-placeholder">[Client Business Name]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="design-label" style="margin-top:20px">📇 NFC Card — Back</p>
+  <div class="nfc-card">
+    <div class="nfc-back">
+      <div class="qr-placeholder">[QR CODE]</div>
+      <div class="scan-text">Scan with your camera</div>
+      <div class="url-text">app.autorephero.com/review/clientname</div>
+      <div class="powered">Powered by AutoRepHero™</div>
+    </div>
+  </div>
+  <p class="design-note">Print as stickers (3.375" x 2.125") and apply to blank NTAG215 NFC cards. Use Sticker Mule or Vistaprint.</p>
+</div>
+
+<!-- ===== TABLE TENT ===== -->
+<div class="design-section">
+  <p class="design-label">🏗️ Table Tent Insert (5" x 7")</p>
+  <div class="table-tent">
+    <div class="tt-header">
+      <div class="tt-emoji">⭐</div>
+      <h2>Loved Your Experience?</h2>
+      <p>We'd appreciate a quick review — it only takes 30 seconds!</p>
+    </div>
+    <div class="tt-body">
+      <div class="tt-biz-name">[Client Business Name]</div>
+      <div class="tt-qr">[QR CODE]</div>
+      <div class="tt-or">— or —</div>
+      <div class="tt-tap">📱 Tap NFC Card to Start</div>
+    </div>
+    <div class="tt-footer">
+      <p>Your honest feedback helps us improve and helps others find great local businesses.</p>
+      <div class="powered">Powered by AutoRepHero™ | autorephero.com</div>
+    </div>
+  </div>
+  <p class="design-note">Print on cardstock and insert into 5x7 acrylic table tent stand.</p>
+</div>
+
+<!-- ===== WINDOW STICKER ===== -->
+<div class="design-section">
+  <p class="design-label">🪟 Window / Door Sticker (4" x 4")</p>
+  <div class="window-sticker">
+    <div class="ws-stars">⭐⭐⭐⭐⭐</div>
+    <div class="ws-title">Review Us!</div>
+    <div class="ws-sub">Scan the code to leave a quick review</div>
+    <div class="ws-qr">[QR CODE]</div>
+    <div class="ws-scan">📱 Scan with your camera</div>
+    <div class="ws-powered">Powered by AutoRepHero™</div>
+  </div>
+  <p class="design-note">Print as 4x4 vinyl sticker. Use Sticker Mule custom stickers.</p>
+</div>
+
+<!-- ===== QUICK START CARD ===== -->
+<div class="design-section">
+  <p class="design-label">📋 Quick Start Card (8.5" x 11" — fold in half)</p>
+  <div class="quickstart">
+    <div class="qs-header">
+      <h1>🚀 RRDS Quick Start Guide</h1>
+      <p>Your Rapid Review Deployment System is ready! Here's everything you need to know.</p>
+    </div>
+    
+    <div class="qs-creds">
+      <h3>Your Login & Links</h3>
+      <div class="cred-row">
+        <div class="cred-item"><div class="cred-label">Dashboard</div><div class="cred-value">app.autorephero.com</div></div>
+        <div class="cred-item"><div class="cred-label">PIN</div><div class="cred-value">[XXXX]</div></div>
+        <div class="cred-item"><div class="cred-label">Review Link</div><div class="cred-value">app.autorephero.com/review/[you]</div></div>
+      </div>
+    </div>
+
+    <div class="qs-body">
+      <div class="qs-section">
+        <h3>📱 How to Use Your Kit</h3>
+        <ul>
+          <li>Hand the NFC card to happy customers</li>
+          <li>They tap it on the back of their phone</li>
+          <li>Your Review Hub opens — they pick a platform</li>
+          <li>AI helps them write a personalized review</li>
+          <li>Keep the table tent visible on your counter</li>
+          <li>Share your review link via text anytime</li>
+        </ul>
+      </div>
+      
+      <div class="qs-section">
+        <h3>💬 What to Say</h3>
+        <div class="script">"I'm glad you're happy with the service! If you have a minute, we'd really appreciate a review — just tap this card or scan the code. It only takes 30 seconds and really helps us out."</div>
+        <div class="script">"That means a lot, thank you! Would you mind sharing that as a review? It helps other people find us."</div>
+      </div>
+      
+      <div class="qs-section">
+        <h3>⚠️ Important — Google Rules</h3>
+        <ul class="dont">
+          <li>Never offer discounts or gifts for reviews</li>
+          <li>Never tell them what to write or what rating</li>
+          <li>Never write reviews for customers</li>
+          <li>Never ask only happy customers</li>
+        </ul>
+        <div class="warn"><strong>Google can suspend your listing</strong> if you violate review policies. The AI starters are just ideas — customers MUST personalize with their own experience.</div>
+      </div>
+      
+      <div class="qs-section">
+        <h3>🤖 AI Review Starters</h3>
+        <ul>
+          <li>The app suggests review ideas to help customers start</li>
+          <li>Customers MUST add their own details</li>
+          <li>Tell them: "Add what service you got and what you liked"</li>
+          <li>Generic/copied reviews get flagged by Google</li>
+          <li>Personal reviews convert better anyway!</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="qs-footer">
+      <div class="contact">
+        <strong>Need help?</strong> 📞 (509) 818-0787 &nbsp;|&nbsp; 📧 chuck@autorephero.com &nbsp;|&nbsp; 🌐 autorephero.com
+      </div>
+      <div class="brand">AutoRepHero™ RAPID System</div>
+    </div>
+  </div>
+  <p class="design-note">Print on 8.5x11 cardstock, fold in half for a 4-panel quick start guide.</p>
+</div>
+
+</body>
+</html>

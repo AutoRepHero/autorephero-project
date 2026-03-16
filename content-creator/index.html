@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Creator Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117; --bg2: #1a1d27; --bg3: #242836; --bg4: #2e3348;
+  --accent: #3b82f6; --accent2: #2563eb; --accent-glow: rgba(59,130,246,0.3);
+  --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+  --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+  --radius: 10px;
+}
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow: hidden; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--bg2); border-bottom: 1px solid var(--bg3); height: 50px; }
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-logo { width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent), #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; }
+.topbar-title { font-weight: 600; font-size: 15px; }
+.topbar-subtitle { color: var(--text2); font-size: 11px; }
+.topbar-actions { display: flex; gap: 6px; }
+
+.btn { padding: 7px 14px; border: none; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-secondary { background: var(--bg3); color: var(--text); }
+.btn-secondary:hover { background: var(--bg4); }
+.btn-success { background: var(--success); color: white; }
+.btn-sm { padding: 4px 8px; font-size: 11px; }
+.btn-icon { width: 30px; height: 30px; padding: 0; justify-content: center; border-radius: 6px; font-size: 14px; }
+
+.app-layout { display: grid; grid-template-columns: 220px 1fr 260px; grid-template-rows: 1fr 120px; height: calc(100vh - 50px); }
+
+/* Left Panel */
+.panel-left { grid-row: 1 / 3; background: var(--bg2); border-right: 1px solid var(--bg3); overflow-y: auto; }
+.panel-header { padding: 10px 12px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); border-bottom: 1px solid var(--bg3); display: flex; justify-content: space-between; align-items: center; }
+.upload-zone { margin: 8px; padding: 20px 12px; border: 2px dashed var(--bg4); border-radius: var(--radius); text-align: center; cursor: pointer; transition: all 0.3s; }
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(59,130,246,0.05); }
+.upload-zone p { font-size: 12px; color: var(--text3); }
+.upload-zone span { color: var(--accent); font-weight: 500; }
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px; }
+.photo-thumb { position: relative; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+.photo-thumb:hover { border-color: var(--accent); }
+.photo-thumb.selected { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-thumb .remove-btn { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; background: rgba(0,0,0,0.7); border: none; color: white; border-radius: 50%; cursor: pointer; font-size: 10px; display: none; align-items: center; justify-content: center; line-height: 18px; text-align: center; }
+.photo-thumb:hover .remove-btn { display: block; }
+.photo-thumb .photo-num { position: absolute; bottom: 2px; left: 2px; background: var(--accent); color: white; font-size: 9px; font-weight: 600; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* Center - Canvas */
+.panel-center { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); padding: 12px; overflow: hidden; }
+.canvas-wrapper { max-width: 100%; max-height: calc(100% - 50px); display: flex; align-items: center; justify-content: center; }
+#preview-canvas { display: block; max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.canvas-controls { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.aspect-toggle { display: flex; background: var(--bg2); border-radius: 6px; overflow: hidden; border: 1px solid var(--bg3); }
+.aspect-btn { padding: 4px 12px; background: none; border: none; color: var(--text2); font-family: inherit; font-size: 11px; cursor: pointer; }
+.aspect-btn.active { background: var(--accent); color: white; }
+.time-display { font-size: 11px; color: var(--text2); font-variant-numeric: tabular-nums; min-width: 70px; text-align: center; }
+
+/* Right Panel */
+.panel-right { grid-row: 1 / 3; background: var(--bg2); border-left: 1px solid var(--bg3); overflow-y: auto; }
+.settings-section { padding: 12px; border-bottom: 1px solid var(--bg3); }
+.settings-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text2); margin-bottom: 8px; }
+.form-group { margin-bottom: 8px; }
+.form-group label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+.form-group input, .form-group select { width: 100%; padding: 6px 8px; background: var(--bg3); border: 1px solid var(--bg4); border-radius: 5px; color: var(--text); font-family: inherit; font-size: 12px; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+.form-row { display: flex; gap: 6px; }
+.form-row .form-group { flex: 1; }
+.template-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.template-card { padding: 8px 4px; background: var(--bg3); border-radius: 6px; cursor: pointer; text-align: center; border: 2px solid transparent; transition: all 0.2s; }
+.template-card:hover { border-color: var(--accent); }
+.template-card.active { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+.template-icon { font-size: 18px; }
+.template-name { font-size: 9px; font-weight: 500; margin-top: 2px; }
+
+/* Timeline */
+.timeline-wrapper { border-top: 1px solid var(--bg3); background: var(--bg2); display: flex; align-items: center; gap: 0; position: relative; }
+.timeline-scroll-btn { flex-shrink: 0; width: 28px; height: 71px; background: var(--bg3); border: none; color: var(--text2); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 2; }
+.timeline-scroll-btn:hover { background: var(--bg4); color: var(--text); }
+.timeline-scroll-btn:first-child { border-right: 1px solid var(--bg3); }
+.timeline-scroll-btn:last-child { border-left: 1px solid var(--bg3); }
+.panel-timeline { flex: 1; overflow-x: auto; padding: 8px; display: flex; gap: 4px; align-items: center; scrollbar-width: thin; scrollbar-color: var(--bg4) transparent; }
+.timeline-slide { flex-shrink: 0; width: 90px; height: 55px; border-radius: 6px; overflow: hidden; position: relative; cursor: pointer; border: 2px solid transparent; }
+.timeline-slide:hover { border-color: var(--text3); }
+.timeline-slide.active { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+.timeline-slide img { width: 100%; height: 100%; object-fit: cover; }
+.timeline-slide .slide-duration { position: absolute; bottom: 1px; right: 3px; font-size: 9px; background: rgba(0,0,0,0.7); padding: 1px 4px; border-radius: 3px; color: white; }
+.timeline-slide .slide-num { position: absolute; top: 1px; left: 3px; font-size: 9px; background: var(--accent); padding: 0px 4px; border-radius: 3px; color: white; font-weight: 600; }
+.timeline-trans { flex-shrink: 0; color: var(--text3); font-size: 10px; padding: 0 2px; }
+.timeline-add { flex-shrink: 0; width: 55px; height: 55px; border: 2px dashed var(--bg4); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text3); font-size: 20px; }
+.timeline-add:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Export Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--bg3); border-radius: 14px; padding: 24px; max-width: 480px; width: 90%; }
+.modal h2 { font-size: 16px; margin-bottom: 4px; }
+.modal p { font-size: 12px; color: var(--text2); margin-bottom: 16px; }
+.export-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.export-option { padding: 10px 6px; background: var(--bg3); border-radius: 8px; cursor: pointer; text-align: center; border: 2px solid transparent; }
+.export-option:hover { border-color: var(--accent); }
+.export-option.selected { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+.export-option .export-icon { font-size: 20px; }
+.export-option .export-name { font-size: 11px; font-weight: 600; }
+.export-option .export-size { font-size: 9px; color: var(--text3); }
+.progress-bar { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; margin: 12px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #8b5cf6); border-radius: 3px; transition: width 0.3s; width: 0%; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">✦</div>
+    <div>
+      <div class="topbar-title">Content Creator Pro</div>
+      <div class="topbar-subtitle">Create videos from photos for social media & ads</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-primary" id="playBtn" onclick="togglePlay()">▶ Preview</button>
+    <button class="btn btn-success" onclick="showExportModal()">⬇ Export</button>
+  </div>
+</div>
+
+<div class="app-layout">
+  <div class="panel-left">
+    <div class="panel-header">
+      <span>📸 Photos</span>
+      <button class="btn btn-sm btn-secondary" onclick="clearAll()">Clear</button>
+    </div>
+    <div style="padding:6px 8px;display:flex;gap:4px">
+      <button class="btn btn-sm btn-secondary" style="flex:1;font-size:10px" onclick="addTextSlide()">＋ Text Slide</button>
+    </div>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+      <p style="font-size:20px;margin-bottom:4px">📷</p>
+      <p>Drag & drop or <span>browse</span></p>
+    </div>
+    <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <div class="panel-center">
+    <div class="canvas-wrapper">
+      <canvas id="preview-canvas"></canvas>
+    </div>
+    <div class="canvas-controls">
+      <div class="aspect-toggle">
+        <button class="aspect-btn active" onclick="setAspect('16:9',this)">16:9</button>
+        <button class="aspect-btn" onclick="setAspect('1:1',this)">1:1</button>
+        <button class="aspect-btn" onclick="setAspect('9:16',this)">9:16</button>
+      </div>
+      <button class="btn btn-icon btn-secondary" onclick="prevSlide()">⏮</button>
+      <button class="btn btn-icon btn-primary" id="playBtnSm" onclick="togglePlay()">▶</button>
+      <button class="btn btn-icon btn-secondary" onclick="nextSlide()">⏭</button>
+      <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+    </div>
+  </div>
+
+  <div class="panel-right">
+    <div class="settings-section">
+      <h3>🏢 Your Business</h3>
+      <div class="form-group"><label>Business Name</label><input type="text" id="bizName" placeholder="Your Business" oninput="drawCurrent()"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone</label><input type="text" id="bizPhone" placeholder="(555) 123-4567" oninput="drawCurrent()"></div>
+        <div class="form-group"><label>Website</label><input type="text" id="bizWebsite" placeholder="yourbiz.com" oninput="drawCurrent()"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Brand Color</label><input type="color" id="brandColor" value="#3b82f6" onchange="drawCurrent()" style="height:30px;padding:2px"></div>
+        <div class="form-group"><label>Bar Position</label>
+          <select id="brandBarPos" onchange="drawCurrent()"><option value="bottom">Bottom</option><option value="top">Top</option><option value="none">Hidden</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Banner Text Size: <span id="bannerSizeVal">16</span>px</label>
+        <input type="range" id="bannerSize" min="10" max="72" value="16" oninput="document.getElementById('bannerSizeVal').textContent=this.value;drawCurrent()">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🎨 Slide Background</h3>
+      <div class="form-group"><label>Background Type</label>
+        <select id="bgType" onchange="saveSlideBg();drawCurrent()">
+          <option value="photo">📷 Photo</option>
+          <option value="dark">⬛ Cinematic Dark</option>
+          <option value="dark-grad">🌑 Dark Gradient</option>
+          <option value="brand">🎨 Brand Color</option>
+          <option value="warm-grad">🌅 Warm Gradient</option>
+          <option value="light">⬜ Clean White</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>📋 Templates</h3>
+      <div class="template-grid">
+        <div class="template-card" onclick="pickTemplate('showcase',this)"><div class="template-icon">🔧</div><div class="template-name">Showcase</div></div>
+        <div class="template-card" onclick="pickTemplate('beforeafter',this)"><div class="template-icon">🔄</div><div class="template-name">Before/After</div></div>
+        <div class="template-card" onclick="pickTemplate('testimonial',this)"><div class="template-icon">⭐</div><div class="template-name">Testimonial</div></div>
+        <div class="template-card" onclick="pickTemplate('promo',this)"><div class="template-icon">🎉</div><div class="template-name">Promo</div></div>
+        <div class="template-card" onclick="pickTemplate('hiring',this)"><div class="template-icon">👷</div><div class="template-name">Hiring</div></div>
+        <div class="template-card" onclick="pickTemplate('portfolio',this)"><div class="template-icon">📁</div><div class="template-name">Portfolio</div></div>
+        <div class="template-card" onclick="pickTemplate('titlecard',this)"><div class="template-icon">🎬</div><div class="template-name">Title Card</div></div>
+        <div class="template-card" onclick="pickTemplate('cta',this)"><div class="template-icon">📞</div><div class="template-name">Call To Action</div></div>
+        <div class="template-card" onclick="pickTemplate('quote',this)"><div class="template-icon">💬</div><div class="template-name">Quote</div></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>✏️ Text Overlay</h3>
+      <div class="form-group"><label>Headline</label><input type="text" id="headline" placeholder="Your headline..." oninput="saveSlideText();drawCurrent()"></div>
+      <div class="form-group"><label>Subtitle / CTA</label><input type="text" id="subtitle" placeholder="Call to action..." oninput="saveSlideText();drawCurrent()"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Size</label>
+          <select id="fontSize" onchange="drawCurrent()"><option value="24">S</option><option value="32" selected>M</option><option value="44">L</option><option value="56">XL</option></select>
+        </div>
+        <div class="form-group"><label>Position</label>
+          <select id="textPosition" onchange="drawCurrent()"><option value="top">Top</option><option value="center">Center</option><option value="bottom" selected>Bottom</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Text Color</label><input type="color" id="textColor" value="#ffffff" onchange="drawCurrent()" style="height:28px;padding:2px"></div>
+        <div class="form-group"><label>BG Opacity</label><input type="range" id="bgOpacity" min="0" max="100" value="60" oninput="drawCurrent()"></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>⏱️ Slide</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Duration (s)</label><input type="number" id="slideDuration" value="3" min="1" max="15" oninput="saveSlideDur()" onchange="saveSlideDur()"></div>
+        <div class="form-group"><label>Transition</label>
+          <select id="transition" onchange="saveSlideTrans();drawCurrent()"><option value="fade">Fade</option><option value="slide">Slide</option><option value="zoom">Zoom</option><option value="none">None</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>🎵 Audio</h3>
+      <div class="form-group"><label>Background Music</label><input type="file" accept="audio/*" id="audioInput" onchange="loadAudio(this.files[0])" style="font-size:11px"></div>
+      <div id="audioStatus" style="font-size:11px;color:var(--text3);margin-bottom:6px"></div>
+      <div class="form-group"><label>Volume</label><input type="range" id="audioVolume" min="0" max="100" value="50" oninput="updateVolume()"></div>
+    </div>
+  </div>
+
+  <div class="timeline-wrapper">
+    <button class="timeline-scroll-btn" onclick="document.getElementById('timeline').scrollBy({left:-200,behavior:'smooth'})">‹</button>
+    <div class="panel-timeline" id="timeline">
+      <div id="timelineEmpty" style="padding:8px;width:100%;text-align:center"><p style="font-size:11px;color:var(--text3)">Upload photos to build your timeline</p></div>
+    </div>
+    <button class="timeline-scroll-btn" onclick="document.getElementById('timeline').scrollBy({left:200,behavior:'smooth'})">›</button>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h2>⬇ Export Video</h2>
+    <p>Choose a platform for optimal dimensions</p>
+    <div class="export-options">
+      <div class="export-option selected" onclick="pickExport('facebook',this)"><div class="export-icon">📘</div><div class="export-name">Facebook</div><div class="export-size">1280×720</div></div>
+      <div class="export-option" onclick="pickExport('instagram',this)"><div class="export-icon">📷</div><div class="export-name">Instagram</div><div class="export-size">1080×1080</div></div>
+      <div class="export-option" onclick="pickExport('reels',this)"><div class="export-icon">🎬</div><div class="export-name">Reels</div><div class="export-size">1080×1920</div></div>
+      <div class="export-option" onclick="pickExport('gbp',this)"><div class="export-icon">📍</div><div class="export-name">Google Biz</div><div class="export-size">1280×720</div></div>
+      <div class="export-option" onclick="pickExport('youtube',this)"><div class="export-icon">▶️</div><div class="export-name">YouTube</div><div class="export-size">1920×1080</div></div>
+      <div class="export-option" onclick="pickExport('shorts',this)"><div class="export-icon">📱</div><div class="export-name">Shorts</div><div class="export-size">1080×1920</div></div>
+    </div>
+    <div class="progress-bar" id="exportProgress" style="display:none"><div class="progress-fill" id="progressFill"></div></div>
+    <p id="exportStatus" style="display:none;text-align:center;font-size:12px"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button class="btn btn-secondary" onclick="closeExportModal()">Cancel</button>
+      <button class="btn btn-success" id="exportBtn" onclick="doExport()">🎬 Export</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const S = {
+  photos: [], slides: [], cur: 0, playing: false, aspect: '16:9',
+  exportPreset: 'facebook', audio: null, animId: null, startTime: 0
+};
+const canvas = document.getElementById('preview-canvas');
+const ctx = canvas.getContext('2d');
+const ASPECT = { '16:9':{w:640,h:360}, '1:1':{w:420,h:420}, '9:16':{w:280,h:498} };
+const EXPORT = { facebook:{w:1280,h:720}, instagram:{w:1080,h:1080}, reels:{w:1080,h:1920}, gbp:{w:1280,h:720}, youtube:{w:1920,h:1080}, shorts:{w:1080,h:1920} };
+const TEMPLATES = {
+  showcase: { hl:'Our Services', sub:'Quality You Can Trust', pos:'bottom', bg:'photo' },
+  beforeafter: { hl:'Before & After', sub:'See the Difference', pos:'top', bg:'photo' },
+  testimonial: { hl:'⭐⭐⭐⭐⭐', sub:'"Excellent service! Highly recommended."', pos:'center', bg:'photo' },
+  promo: { hl:'🔥 Limited Time Offer!', sub:'Call Now for Details', pos:'center', bg:'photo' },
+  hiring: { hl:"We're Hiring!", sub:'Join Our Team Today', pos:'center', bg:'photo' },
+  portfolio: { hl:'Our Work', sub:'See What We Can Do', pos:'bottom', bg:'photo' },
+  titlecard: { hl:'Welcome to Our Business', sub:'Your Tagline Goes Here', pos:'center', bg:'dark-grad', fs:'44', bgo:'0' },
+  cta: { hl:'Call Us Today!', sub:'(555) 123-4567  •  yourbiz.com', pos:'center', bg:'brand', fs:'44', bgo:'0' },
+  quote: { hl:'"Amazing quality and service!"', sub:'— Happy Customer', pos:'center', bg:'dark', fs:'32', bgo:'0' },
+};
+
+// ===== UPLOAD =====
+const uz = document.getElementById('uploadZone');
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('dragover'); });
+uz.addEventListener('dragleave', () => uz.classList.remove('dragover'));
+uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+
+function handleFiles(files) {
+  let loaded = 0;
+  const total = files.length;
+  Array.from(files).forEach(f => {
+    if (!f.type.startsWith('image/')) { loaded++; return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        S.photos.push({ img, src: ev.target.result, name: f.name });
+        S.slides.push({
+          pi: S.photos.length - 1,
+          dur: parseInt(document.getElementById('slideDuration').value) || 3,
+          trans: document.getElementById('transition').value,
+          hl: document.getElementById('headline').value,
+          sub: document.getElementById('subtitle').value,
+          bg: document.getElementById('bgType').value
+        });
+        loaded++;
+        if (loaded >= total) {
+          if (S.slides.length > 0 && S.cur === 0) loadSlideUI(0);
+          refresh();
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function clearAll() { S.photos=[]; S.slides=[]; S.cur=0; refresh(); }
+
+function addTextSlide() {
+  S.slides.push({
+    pi: -1,
+    dur: parseInt(document.getElementById('slideDuration').value) || 4,
+    trans: document.getElementById('transition').value,
+    hl: document.getElementById('headline').value || 'Your Headline',
+    sub: document.getElementById('subtitle').value || 'Your subtitle text here',
+    bg: document.getElementById('bgType').value || 'dark-grad'
+  });
+  S.cur = S.slides.length - 1;
+  loadSlideUI(S.cur);
+  refresh();
+}
+
+// ===== RENDER =====
+function refresh() { renderGrid(); renderTimeline(); drawCurrent(); }
+
+function renderGrid() {
+  document.getElementById('photoGrid').innerHTML = S.photos.map((p,i) =>
+    `<div class="photo-thumb ${S.slides[S.cur]?.pi===i?'selected':''}" onclick="selectPhoto(${i})">
+      <img src="${p.src}"><button class="remove-btn" onclick="event.stopPropagation();removePhoto(${i})">✕</button>
+      <div class="photo-num">${i+1}</div></div>`
+  ).join('');
+}
+
+function selectPhoto(i) { if(S.slides[S.cur]) S.slides[S.cur].pi=i; refresh(); }
+
+function removePhoto(i) {
+  S.photos.splice(i,1);
+  S.slides = S.slides.filter(s=>s.pi!==i).map(s=>{ if(s.pi>i) s.pi--; return s; });
+  if(S.cur>=S.slides.length) S.cur=Math.max(0,S.slides.length-1);
+  refresh();
+}
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  if(!S.slides.length) { tl.innerHTML='<div id="timelineEmpty" style="padding:8px;width:100%;text-align:center"><p style="font-size:11px;color:var(--text3)">Upload photos to build your timeline</p></div>'; return; }
+  const icons = {fade:'◐',slide:'→',zoom:'⊕',none:'·'};
+  tl.innerHTML = S.slides.map((s,i) => {
+    const p = S.photos[s.pi];
+    return `<div class="timeline-slide ${i===S.cur?'active':''}" onclick="goSlide(${i})">${p?`<img src="${p.src}">`:''}
+      <div class="slide-num">${i+1}</div><div class="slide-duration">${s.dur}s</div></div>
+      ${i<S.slides.length-1?`<div class="timeline-trans">${icons[s.trans]||'◐'}</div>`:''}`;
+  }).join('') + '<div class="timeline-add" onclick="document.getElementById(\'fileInput\').click()">+</div>';
+}
+
+function goSlide(i) { S.cur=i; loadSlideUI(i); refresh(); }
+function loadSlideUI(i) {
+  const s = S.slides[i]; if(!s) return;
+  document.getElementById('headline').value = s.hl||'';
+  document.getElementById('subtitle').value = s.sub||'';
+  document.getElementById('slideDuration').value = s.dur;
+  document.getElementById('transition').value = s.trans;
+  document.getElementById('bgType').value = s.bg||'photo';
+}
+function saveSlideText() { const s=S.slides[S.cur]; if(s){ s.hl=document.getElementById('headline').value; s.sub=document.getElementById('subtitle').value; } }
+function saveSlideDur() { const s=S.slides[S.cur]; if(s){ s.dur=parseInt(document.getElementById('slideDuration').value)||3; renderTimeline(); } }
+function saveSlideTrans() { const s=S.slides[S.cur]; if(s){ s.trans=document.getElementById('transition').value; renderTimeline(); } }
+function saveSlideBg() { const s=S.slides[S.cur]; if(s){ s.bg=document.getElementById('bgType').value; } }
+function prevSlide() { if(S.cur>0) goSlide(S.cur-1); }
+function nextSlide() { if(S.cur<S.slides.length-1) goSlide(S.cur+1); }
+
+// ===== CANVAS DRAWING =====
+function drawBg(c, sl, w, h, bc) {
+  const bgType = sl.bg || 'photo';
+  const ph = S.photos[sl.pi];
+  if(bgType === 'photo' && ph) { coverImg(c, ph.img, 0, 0, w, h); return; }
+  // Non-photo backgrounds
+  let grad;
+  switch(bgType) {
+    case 'dark':
+      c.fillStyle = '#111114'; c.fillRect(0,0,w,h); break;
+    case 'dark-grad':
+      grad = c.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0,'#1a1a2e'); grad.addColorStop(1,'#0d0d0d');
+      c.fillStyle = grad; c.fillRect(0,0,w,h); break;
+    case 'brand':
+      grad = c.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0, bc); grad.addColorStop(1, shadeColor(bc,-40));
+      c.fillStyle = grad; c.fillRect(0,0,w,h); break;
+    case 'warm-grad':
+      grad = c.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0,'#2d1b0e'); grad.addColorStop(0.5,'#1a0a00'); grad.addColorStop(1,'#0d0505');
+      c.fillStyle = grad; c.fillRect(0,0,w,h); break;
+    case 'light':
+      grad = c.createLinearGradient(0,0,0,h);
+      grad.addColorStop(0,'#f8f9fa'); grad.addColorStop(1,'#e9ecef');
+      c.fillStyle = grad; c.fillRect(0,0,w,h); break;
+    default:
+      if(ph) coverImg(c, ph.img, 0, 0, w, h);
+      else { c.fillStyle='#111114'; c.fillRect(0,0,w,h); }
+  }
+}
+
+function shadeColor(hex, pct) {
+  const n = parseInt(hex.slice(1),16);
+  const amt = Math.round(2.55 * pct);
+  const r = Math.max(0,Math.min(255,((n>>16)+amt)));
+  const g = Math.max(0,Math.min(255,(((n>>8)&0xFF)+amt)));
+  const b = Math.max(0,Math.min(255,((n&0xFF)+amt)));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+
+function drawCurrent() {
+  const a = ASPECT[S.aspect]; canvas.width=a.w; canvas.height=a.h;
+  ctx.fillStyle='#111'; ctx.fillRect(0,0,a.w,a.h);
+  if(!S.slides.length) { drawEmpty(a); return; }
+  const sl = S.slides[S.cur]; if(!sl) return;
+  const bc = document.getElementById('brandColor').value;
+  drawBg(ctx, sl, a.w, a.h, bc);
+  overlays(ctx,sl,a.w,a.h,1);
+}
+
+function drawEmpty(a) {
+  ctx.fillStyle='#1a1d27'; ctx.fillRect(0,0,a.w,a.h);
+  ctx.fillStyle='#64748b'; ctx.textAlign='center'; ctx.font='500 15px Inter,sans-serif';
+  ctx.fillText('Upload photos to get started',a.w/2,a.h/2-8);
+  ctx.font='12px Inter,sans-serif'; ctx.fillText('Drag & drop or click upload',a.w/2,a.h/2+12);
+}
+
+function coverImg(c,img,x,y,w,h) {
+  const ir=img.width/img.height, br=w/h;
+  let sw,sh,sx,sy;
+  if(ir>br){sh=img.height;sw=sh*br;sx=(img.width-sw)/2;sy=0;}
+  else{sw=img.width;sh=sw/br;sx=0;sy=(img.height-sh)/2;}
+  c.drawImage(img,sx,sy,sw,sh,x,y,w,h);
+}
+
+function overlays(c,sl,w,h,scale) {
+  const hl=sl.hl||'', sub=sl.sub||'';
+  const fs=parseInt(document.getElementById('fontSize').value)*scale;
+  const pos=document.getElementById('textPosition').value;
+  const tc=document.getElementById('textColor').value;
+  const bgo=parseInt(document.getElementById('bgOpacity').value)/100;
+  const bc=document.getElementById('brandColor').value;
+  const bp=document.getElementById('brandBarPos').value;
+  const bn=document.getElementById('bizName').value;
+  const bph=document.getElementById('bizPhone').value;
+  const bw=document.getElementById('bizWebsite').value;
+  const barH=52*scale;
+  const bgType=sl.bg||'photo';
+  // For non-photo backgrounds: skip the dark text bg box (text reads directly on bg)
+  const isTextBg = (bgType !== 'photo');
+  // Auto text color for light bg
+  const autoTc = (bgType === 'light') ? '#1a1a1a' : tc;
+
+  // Text overlay
+  if(hl||sub) {
+    const pad=isTextBg?24*scale:16*scale, lh=fs*1.3;
+    const bH=(hl?lh:0)+(sub?lh*0.55:0)+pad*2;
+    let bY;
+    if(pos==='top') bY=(bp==='top'&&bn)?barH:0;
+    else if(pos==='center') bY=(h-bH)/2;
+    else bY=h-bH-(bp==='bottom'&&bn?barH:0);
+    if(!isTextBg) { c.fillStyle=`rgba(0,0,0,${bgo})`; c.fillRect(0,bY,w,bH); }
+    c.textAlign='center'; c.fillStyle=autoTc;
+    if(hl){c.font=`700 ${fs}px Inter,sans-serif`;c.fillText(hl,w/2,bY+pad+fs*0.82,w-30*scale);}
+    if(sub){c.font=`400 ${Math.round(fs*0.48)}px Inter,sans-serif`;c.fillText(sub,w/2,bY+pad+(hl?fs*1.25:0)+fs*0.38,w-30*scale);}
+  }
+
+  // Brand bar
+  if(bn&&bp!=='none') {
+    const bfs=parseInt(document.getElementById('bannerSize').value)||16;
+    const dynBarH=Math.max(52,(bfs*3.4))*scale;
+    const bY=bp==='top'?0:h-dynBarH;
+    c.fillStyle=bc+'dd'; c.fillRect(0,bY,w,dynBarH);
+    c.fillStyle='#fff'; c.textAlign='left'; c.font=`700 ${bfs*scale}px Inter,sans-serif`;
+    c.fillText(bn,10*scale,bY+dynBarH*0.45);
+    if(bph){c.font=`500 ${Math.round(bfs*0.82*scale)}px Inter,sans-serif`;c.fillText(bph,10*scale,bY+dynBarH*0.78);}
+    if(bw){c.textAlign='right';c.font=`500 ${Math.round(bfs*0.75*scale)}px Inter,sans-serif`;c.fillText(bw,w-10*scale,bY+dynBarH*(bph?0.78:0.62));}
+  }
+}
+
+function setAspect(r,btn) { S.aspect=r; document.querySelectorAll('.aspect-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); drawCurrent(); }
+function pickTemplate(name,el) {
+  document.querySelectorAll('.template-card').forEach(c=>c.classList.remove('active')); el.classList.add('active');
+  const t=TEMPLATES[name];
+  document.getElementById('headline').value=t.hl;
+  document.getElementById('subtitle').value=t.sub;
+  document.getElementById('textPosition').value=t.pos;
+  if(t.bg) { document.getElementById('bgType').value=t.bg; saveSlideBg(); }
+  if(t.fs) document.getElementById('fontSize').value=t.fs;
+  if(t.bgo!==undefined) document.getElementById('bgOpacity').value=t.bgo;
+  saveSlideText(); drawCurrent();
+}
+
+// ===== AUDIO =====
+function loadAudio(file) {
+  if(!file) return;
+  S.audio = new Audio(URL.createObjectURL(file));
+  S.audio.loop = true;
+  document.getElementById('audioStatus').textContent = '🎵 ' + file.name;
+  updateVolume();
+}
+function updateVolume() { if(S.audio) S.audio.volume = document.getElementById('audioVolume').value/100; }
+
+// ===== PLAYBACK =====
+function togglePlay() {
+  if(!S.slides.length) return;
+  if(S.playing) { stopPlay(); return; }
+  S.playing=true; S.cur=0; S.startTime=performance.now();
+  document.getElementById('playBtn').innerHTML='⏸ Stop';
+  document.getElementById('playBtnSm').textContent='⏸';
+  goSlide(0);
+  if(S.audio) { S.audio.currentTime=0; updateVolume(); S.audio.play().catch(()=>{}); }
+  playTick();
+}
+
+function stopPlay() {
+  S.playing=false;
+  document.getElementById('playBtn').innerHTML='▶ Preview';
+  document.getElementById('playBtnSm').textContent='▶';
+  if(S.audio){S.audio.pause();S.audio.currentTime=0;}
+  if(S.animId) cancelAnimationFrame(S.animId);
+}
+
+function playTick() {
+  if(!S.playing) return;
+  const elapsed=(performance.now()-S.startTime)/1000;
+  const totalDur=S.slides.reduce((s,sl)=>s+sl.dur,0);
+  document.getElementById('timeDisplay').textContent=`${fmt(Math.min(elapsed,totalDur))} / ${fmt(totalDur)}`;
+
+  // Find which slide we should be on
+  let cumTime=0;
+  for(let i=0;i<S.slides.length;i++){
+    cumTime+=S.slides[i].dur;
+    if(elapsed<cumTime){
+      if(i!==S.cur){S.cur=i;renderTimeline();renderGrid();}
+      // Draw with transition
+      const slideStart=cumTime-S.slides[i].dur;
+      const slideElapsed=elapsed-slideStart;
+      const transTime=0.6;
+      if(slideElapsed<transTime && i>0){
+        drawTransition(i-1,i,slideElapsed/transTime,S.slides[i-1].trans);
+      } else {
+        const a=ASPECT[S.aspect]; canvas.width=a.w; canvas.height=a.h;
+        ctx.fillStyle='#111'; ctx.fillRect(0,0,a.w,a.h);
+        const bc=document.getElementById('brandColor').value;
+        drawBg(ctx,S.slides[i],a.w,a.h,bc);
+        overlays(ctx,S.slides[i],a.w,a.h,1);
+      }
+      S.animId=requestAnimationFrame(playTick);
+      return;
+    }
+  }
+  // End
+  stopPlay();
+}
+
+function drawTransition(fi,ti,p,type) {
+  const a=ASPECT[S.aspect]; canvas.width=a.w; canvas.height=a.h;
+  const fsl=S.slides[fi], tsl=S.slides[ti];
+  const bc=document.getElementById('brandColor').value;
+  ctx.fillStyle='#111'; ctx.fillRect(0,0,a.w,a.h);
+  // Create off-screen canvases for from/to frames
+  const fCanvas=document.createElement('canvas'); fCanvas.width=a.w; fCanvas.height=a.h;
+  const tCanvas=document.createElement('canvas'); tCanvas.width=a.w; tCanvas.height=a.h;
+  const fc=fCanvas.getContext('2d'); const tc2=tCanvas.getContext('2d');
+  if(fsl){drawBg(fc,fsl,a.w,a.h,bc);overlays(fc,fsl,a.w,a.h,1);}
+  if(tsl){drawBg(tc2,tsl,a.w,a.h,bc);overlays(tc2,tsl,a.w,a.h,1);}
+  if(type==='fade'){
+    ctx.globalAlpha=1-p; ctx.drawImage(fCanvas,0,0);
+    ctx.globalAlpha=p; ctx.drawImage(tCanvas,0,0);
+    ctx.globalAlpha=1;
+  } else if(type==='slide'){
+    const o=a.w*(1-p);
+    ctx.drawImage(fCanvas,-a.w+o,0);
+    ctx.drawImage(tCanvas,o,0);
+  } else if(type==='zoom'){
+    ctx.drawImage(fCanvas,0,0);
+    ctx.save();ctx.translate(a.w/2,a.h/2);const sc=1+(1-p)*0.3;ctx.scale(sc,sc);ctx.globalAlpha=p;ctx.drawImage(tCanvas,-a.w/2,-a.h/2);ctx.restore();ctx.globalAlpha=1;
+  } else {
+    ctx.drawImage(tCanvas,0,0);
+  }
+}
+
+function fmt(s){return `${Math.floor(s/60)}:${Math.floor(s%60).toString().padStart(2,'0')}`;}
+
+// ===== EXPORT =====
+function showExportModal(){document.getElementById('exportModal').classList.add('active');}
+function closeExportModal(){document.getElementById('exportModal').classList.remove('active');document.getElementById('exportProgress').style.display='none';document.getElementById('exportStatus').style.display='none';document.getElementById('exportBtn').textContent='🎬 Export';document.getElementById('exportBtn').disabled=false;}
+function pickExport(p,el){S.exportPreset=p;document.querySelectorAll('.export-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');}
+
+async function doExport(){
+  if(!S.slides.length){alert('Add photos first!');return;}
+  const pre=EXPORT[S.exportPreset];
+  const ec=document.createElement('canvas');ec.width=pre.w;ec.height=pre.h;
+  const ex=ec.getContext('2d');
+  const stream=ec.captureStream(30);
+  const rec=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:5000000});
+  const chunks=[];
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  rec.onstop=()=>{
+    const blob=new Blob(chunks,{type:'video/webm'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`content-${S.exportPreset}-${Date.now()}.webm`;a.click();
+    document.getElementById('exportStatus').textContent='✅ Video exported!';
+    document.getElementById('exportBtn').textContent='🎬 Export Again';document.getElementById('exportBtn').disabled=false;
+  };
+  document.getElementById('exportProgress').style.display='block';
+  document.getElementById('exportStatus').style.display='block';
+  document.getElementById('exportStatus').textContent='Recording...';
+  document.getElementById('exportBtn').textContent='⏳ Exporting...';document.getElementById('exportBtn').disabled=true;
+  rec.start();
+  const scale=pre.w/ASPECT[S.aspect].w;
+  const totalFrames=S.slides.reduce((s,sl)=>s+sl.dur*30,0);
+  let frame=0;
+  const exBc=document.getElementById('brandColor').value;
+  // Helper: render a slide onto a given context at export size
+  function renderSlideEx(ctx2, sl, w, h, sc) {
+    ctx2.fillStyle='#111'; ctx2.fillRect(0,0,w,h);
+    drawBg(ctx2, sl, w, h, exBc);
+    overlays(ctx2, sl, w, h, sc);
+  }
+  for(let si=0;si<S.slides.length;si++){
+    const sl=S.slides[si];
+    const frames=sl.dur*30;const tf=Math.min(18,frames);
+    const prevTrans=si>0?S.slides[si-1].trans:'none';
+    for(let f=0;f<frames;f++){
+      ex.fillStyle='#111';ex.fillRect(0,0,pre.w,pre.h);
+      if(f<tf&&si>0){
+        const p=f/tf;
+        const fCanvas2=document.createElement('canvas');fCanvas2.width=pre.w;fCanvas2.height=pre.h;
+        const tCanvas2=document.createElement('canvas');tCanvas2.width=pre.w;tCanvas2.height=pre.h;
+        renderSlideEx(fCanvas2.getContext('2d'),S.slides[si-1],pre.w,pre.h,scale);
+        renderSlideEx(tCanvas2.getContext('2d'),sl,pre.w,pre.h,scale);
+        if(prevTrans==='fade'){
+          ex.globalAlpha=1-p;ex.drawImage(fCanvas2,0,0);
+          ex.globalAlpha=p;ex.drawImage(tCanvas2,0,0);
+          ex.globalAlpha=1;
+        } else if(prevTrans==='slide'){
+          const o=pre.w*(1-p);
+          ex.drawImage(fCanvas2,-pre.w+o,0);
+          ex.drawImage(tCanvas2,o,0);
+        } else if(prevTrans==='zoom'){
+          ex.drawImage(fCanvas2,0,0);
+          ex.save();ex.translate(pre.w/2,pre.h/2);const sc2=1+(1-p)*0.3;ex.scale(sc2,sc2);ex.globalAlpha=p;ex.drawImage(tCanvas2,-pre.w/2,-pre.h/2);ex.restore();ex.globalAlpha=1;
+        } else {
+          ex.drawImage(tCanvas2,0,0);
+        }
+      } else {
+        renderSlideEx(ex,sl,pre.w,pre.h,scale);
+      }
+      frame++;
+      const pct=Math.round(frame/totalFrames*100);
+      document.getElementById('progressFill').style.width=pct+'%';
+      document.getElementById('exportStatus').textContent='Recording... '+pct+'%';
+      await new Promise(r=>setTimeout(r,33));
+    }
+  }
+  rec.stop();
+}
+
+// ===== INIT =====
+drawCurrent();
+</script>
+</body>
+</html>
