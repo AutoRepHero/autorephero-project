@@ -162,7 +162,19 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   .timeline-add { width: 60px; height: 60px; font-size: 28px; min-width: 60px; }
 
   .mobile-add-bar { display: flex; gap: 8px; padding: 10px 12px; background: var(--bg2); border-top: 1px solid var(--bg3); order: 9; }
-  .mobile-add-bar .btn { flex: 1; justify-content: center; font-size: 14px; min-height: 48px; }
+  .mobile-add-bar .btn { flex: 1; justify-content: center; font-size: 16px; min-height: 52px; font-weight: 600; }
+
+  .slide-picker-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 1001; }
+  .slide-picker-overlay.active { display: flex; }
+  .slide-picker { background: var(--bg2); border-radius: 16px 16px 0 0; padding: 20px 16px 30px; width: 100%; max-width: 500px; }
+  .slide-picker h3 { font-size: 16px; text-align: center; margin-bottom: 16px; color: var(--text); }
+  .slide-picker-options { display: flex; flex-direction: column; gap: 10px; }
+  .slide-picker-btn { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: var(--bg3); border: 2px solid transparent; border-radius: 12px; cursor: pointer; font-family: inherit; color: var(--text); font-size: 15px; font-weight: 500; min-height: 60px; }
+  .slide-picker-btn:active { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+  .slide-picker-btn .picker-icon { font-size: 28px; }
+  .slide-picker-btn .picker-label { text-align: left; }
+  .slide-picker-btn .picker-label small { display: block; font-size: 12px; color: var(--text2); font-weight: 400; margin-top: 2px; }
+  .slide-picker-cancel { width: 100%; margin-top: 12px; padding: 14px; background: none; border: 1px solid var(--bg4); border-radius: 10px; color: var(--text2); font-family: inherit; font-size: 14px; cursor: pointer; }
   .timeline-slide { width: 100px; height: 62px; }
   .timeline-scroll-btn { width: 36px; height: 80px; font-size: 18px; }
   .panel-timeline { padding: 10px 8px; }
@@ -218,8 +230,24 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   </div>
 
   <div class="mobile-add-bar">
-    <button class="btn btn-primary" onclick="addTextSlide();switchMobileTab('preview')">＋ Text Slide</button>
-    <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">📷 Add Photo</button>
+    <button class="btn btn-primary" onclick="showSlidePicker()">＋ Add Slide</button>
+  </div>
+
+  <div class="slide-picker-overlay" id="slidePicker" onclick="if(event.target===this)closeSlidePicker()">
+    <div class="slide-picker">
+      <h3>Add a Slide</h3>
+      <div class="slide-picker-options">
+        <button class="slide-picker-btn" onclick="addPhotoSlide()">
+          <span class="picker-icon">📷</span>
+          <span class="picker-label">Photo Slide<small>Pick photos from your gallery</small></span>
+        </button>
+        <button class="slide-picker-btn" onclick="addTextSlideAndClose()">
+          <span class="picker-icon">✏️</span>
+          <span class="picker-label">Text Slide<small>Headline, quote, call-to-action</small></span>
+        </button>
+      </div>
+      <button class="slide-picker-cancel" onclick="closeSlidePicker()">Cancel</button>
+    </div>
   </div>
 
   <div class="panel-center">
@@ -458,7 +486,7 @@ function renderTimeline() {
     return `<div class="timeline-slide ${i===S.cur?'active':''}" onclick="goSlide(${i})">${p?`<img src="${p.src}">`:''}
       <div class="slide-num">${i+1}</div><div class="slide-duration">${s.dur}s</div></div>
       ${i<S.slides.length-1?`<div class="timeline-trans">${icons[s.trans]||'◐'}</div>`:''}`;
-  }).join('') + '<div class="timeline-add" onclick="document.getElementById(\'fileInput\').click()">+</div>';
+  }).join('') + '<div class="timeline-add" onclick="window.innerWidth<768?showSlidePicker():document.getElementById(\'fileInput\').click()">+</div>';
 }
 
 function goSlide(i) { S.cur=i; loadSlideUI(i); refresh(); }
@@ -766,6 +794,23 @@ async function doExport(){
     }
   }
   rec.stop();
+}
+
+// ===== SLIDE PICKER (MOBILE) =====
+function showSlidePicker() {
+  document.getElementById('slidePicker').classList.add('active');
+}
+function closeSlidePicker() {
+  document.getElementById('slidePicker').classList.remove('active');
+}
+function addPhotoSlide() {
+  closeSlidePicker();
+  document.getElementById('fileInput').click();
+}
+function addTextSlideAndClose() {
+  closeSlidePicker();
+  addTextSlide();
+  if (window.innerWidth < 768) switchMobileTab('preview');
 }
 
 // ===== MOBILE TABS =====
