@@ -114,6 +114,9 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
 
+/* Mobile Add Bar */
+.mobile-add-bar { display: none; }
+
 /* Mobile Tab Bar */
 .mobile-tabs { display: none; }
 
@@ -157,6 +160,9 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   .upload-zone p { font-size: 14px; }
 
   .timeline-add { width: 60px; height: 60px; font-size: 28px; min-width: 60px; }
+
+  .mobile-add-bar { display: flex; gap: 8px; padding: 10px 12px; background: var(--bg2); border-top: 1px solid var(--bg3); order: 9; }
+  .mobile-add-bar .btn { flex: 1; justify-content: center; font-size: 14px; min-height: 48px; }
   .timeline-slide { width: 100px; height: 62px; }
   .timeline-scroll-btn { width: 36px; height: 80px; font-size: 18px; }
   .panel-timeline { padding: 10px 8px; }
@@ -201,7 +207,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
       <button class="btn btn-sm btn-secondary" onclick="clearAll()">Clear</button>
     </div>
     <div style="padding:6px 8px;display:flex;gap:4px">
-      <button class="btn btn-sm btn-secondary" style="flex:1;font-size:10px" onclick="addTextSlide()" ontouchend="event.preventDefault();addTextSlide()">＋ Text Slide</button>
+      <button class="btn btn-sm btn-secondary" style="flex:1;font-size:10px" onclick="addTextSlide()">＋ Text Slide</button>
     </div>
     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
       <p style="font-size:20px;margin-bottom:4px">📷</p>
@@ -209,6 +215,11 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
     <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <div class="mobile-add-bar">
+    <button class="btn btn-primary" onclick="addTextSlide();switchMobileTab('preview')">＋ Text Slide</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">📷 Add Photo</button>
   </div>
 
   <div class="panel-center">
@@ -447,7 +458,7 @@ function renderTimeline() {
     return `<div class="timeline-slide ${i===S.cur?'active':''}" onclick="goSlide(${i})">${p?`<img src="${p.src}">`:''}
       <div class="slide-num">${i+1}</div><div class="slide-duration">${s.dur}s</div></div>
       ${i<S.slides.length-1?`<div class="timeline-trans">${icons[s.trans]||'◐'}</div>`:''}`;
-  }).join('') + '<div class="timeline-add" onclick="document.getElementById(\'fileInput\').click()" ontouchend="event.preventDefault();document.getElementById(\'fileInput\').click()">+</div>';
+  }).join('') + '<div class="timeline-add" onclick="document.getElementById(\'fileInput\').click()">+</div>';
 }
 
 function goSlide(i) { S.cur=i; loadSlideUI(i); refresh(); }
