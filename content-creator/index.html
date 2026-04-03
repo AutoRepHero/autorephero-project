@@ -213,7 +213,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
       <p style="font-size:20px;margin-bottom:4px">📷</p>
       <p>Drag & drop or <span>browse</span></p>
     </div>
-    <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+    <input type="file" id="fileInput" multiple accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="handleFiles(this.files)">
     <div class="photo-grid" id="photoGrid"></div>
   </div>
 
